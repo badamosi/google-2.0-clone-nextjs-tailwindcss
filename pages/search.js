@@ -5,14 +5,20 @@ import AppsIcon from '@material-ui/icons/Apps';
 import { Avatar } from '@material-ui/core'
 import { useState } from 'react';
 import HeaderOptions from '../components/HeaderOptions';
+import { API_KEY, CONTEXT_KEY } from '../keys'
+import Response from '../response'
+import SearchResult from '../components/SearchResult';
 
 
 
-function Search() {
+function Search({data}) {
 
     const router = useRouter()
     const [searchTerm, setSearchTerm] = useState(router.query.q)
     // const search = searchTerm || router.query.q
+
+
+    console.log(data)
 
 
     return (
@@ -46,6 +52,7 @@ function Search() {
                 </div>
                 </div>
             </header>
+            <SearchResult result={data} />
         </div>
     )
 }
@@ -53,5 +60,15 @@ function Search() {
 export default Search
 
 export async function getServerSideProps(context) {
-    
+    const useDummyData = false;
+
+    const result = useDummyData ? Response : await fetch(`https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CONTEXT_KEY}&q=${context.query.q}`).then(response => response.json())
+
+    return {
+        props: {
+            data: result
+        }
+    }
+
+
 }
